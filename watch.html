@@ -46,55 +46,6 @@
             },
         }
     </script>
-
-    <!-- ============================================================
-         POPUP / NAVIGATION BLOCKING
-         Prevents iframes from opening new tabs, windows, or
-         redirecting the top-level page.
-    ============================================================ -->
-    <script>
-        // 1. Block window.open() calls originating from this page or its frames
-        const _nativeOpen = window.open.bind(window);
-        window.open = function(url, target, features) {
-            // Allow blank opens with no URL (used by some legitimate scripts)
-            if (!url || url === 'about:blank') return null;
-            console.warn('[Nova] Blocked popup:', url);
-            return null;
-        };
-
-        // 2. Prevent iframes from hijacking the top-level location
-        //    (catches things like `top.location = "..."`)
-        Object.defineProperty(window, 'onbeforeunload', {
-            set: function() {}
-        });
-
-        // 3. Block any attempt by a child frame to navigate the top frame
-        window.addEventListener('message', function(e) {
-            // Drop messages that try to redirect or open URLs
-            if (e.data && typeof e.data === 'string') {
-                if (/window\.open|location\.href|top\.location/i.test(e.data)) {
-                    e.stopImmediatePropagation();
-                }
-            }
-        }, true);
-
-        // 4. CSP-style: intercept clicks on dynamically injected anchors
-        //    that target _blank / _top / _parent
-        document.addEventListener('click', function(e) {
-            const anchor = e.target.closest('a');
-            if (!anchor) return;
-            const target = (anchor.getAttribute('target') || '').toLowerCase();
-            if (target === '_blank' || target === '_top' || target === '_parent') {
-                // Only allow clicks the user made on Nova's own nav links
-                if (!anchor.closest('nav') && !anchor.closest('.allow-external')) {
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
-                    console.warn('[Nova] Blocked injected anchor navigation:', anchor.href);
-                }
-            }
-        }, true);
-    </script>
-
     <style>
         .glass-effect {
             background: rgba(17, 24, 39, 0.7);
@@ -238,12 +189,12 @@
         <div class="container mx-auto px-4 md:px-6 py-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-8">
-                    <a href="/" class="flex items-center space-x-3 allow-external">
+                    <a href="/" class="flex items-center space-x-3">
                         <img src="logo.png" alt="Nova Logo" class="h-8 w-8 md:h-10 md:w-10">
                         <span class="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-violet-800">Nova</span>
-                    </a>
+                </a>
                     <div class="hidden md:flex space-x-6">
-                        <a href="/" class="nav-link flex items-center allow-external">
+                        <a href="/" class="nav-link flex items-center">
                             <span>Browse</span>
                         </a>
                         <button @click="showWatchLater = true" class="nav-link flex items-center space-x-2">
@@ -252,19 +203,19 @@
                                   class="bg-purple-600 text-white text-xs flex items-center justify-center rounded-full w-6 h-6" 
                                   x-text="watchLaterCount"></span>
                         </button>
-                        <a href="https://github.com/ambr0sial/nova" target="_blank" class="nav-link flex items-center allow-external">
+                        <a href="https://github.com/ambr0sial/nova" target="_blank" class="nav-link flex items-center">
                             <span>GitHub</span>
                         </a>
-                        <a href="https://ko-fi.com/ambrosial" target="_blank" class="nav-link flex items-center allow-external">
+                        <a href="https://ko-fi.com/ambrosial" target="_blank" class="nav-link flex items-center">
                             <span>Ko-Fi</span>
-                        </a>
-                        <a href="https://discord.gg/s9kUZw7CqP" target="_blank" class="nav-link flex items-center allow-external">
+                </a>
+                        <a href="https://discord.gg/s9kUZw7CqP" target="_blank" class="nav-link flex items-center">
                             <span>Discord</span>
                         </a>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="settings.html" class="text-gray-400 hover:text-purple-400 transition-colors duration-300 allow-external" title="Settings">
+                    <a href="settings.html" class="text-gray-400 hover:text-purple-400 transition-colors duration-300" title="Settings">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 settings-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -289,7 +240,7 @@
                 x-transition:leave-end="opacity-0 transform -translate-y-2"
                 class="md:hidden mt-4 pb-4">
                 <div class="flex flex-col space-y-4">
-                    <a href="/" class="px-4 py-2 hover:bg-gray-800 rounded-lg transition-colors allow-external">Browse</a>
+                    <a href="/" class="px-4 py-2 hover:bg-gray-800 rounded-lg transition-colors">Browse</a>
                     <button @click="showWatchLater = true; mobileMenu = false" 
                             class="flex items-center justify-between px-4 py-2 hover:bg-gray-800 rounded-lg transition-colors">
                         <span>Watch Later</span>
@@ -298,11 +249,11 @@
                               x-text="watchLaterCount"></span>
                     </button>
                     <a href="https://github.com/ambr0sial/nova" target="_blank" 
-                       class="px-4 py-2 hover:bg-gray-800 rounded-lg transition-colors allow-external">GitHub</a>
+                       class="px-4 py-2 hover:bg-gray-800 rounded-lg transition-colors">GitHub</a>
                     <a href="https://ko-fi.com/ambrosial" target="_blank" 
-                       class="px-4 py-2 hover:bg-gray-800 rounded-lg transition-colors allow-external">Ko-Fi</a>
+                       class="px-4 py-2 hover:bg-gray-800 rounded-lg transition-colors">Ko-Fi</a>
                     <a href="https://discord.gg/s9kUZw7CqP" target="_blank" 
-                       class="px-4 py-2 hover:bg-gray-800 rounded-lg transition-colors allow-external">Discord</a>
+                       class="px-4 py-2 hover:bg-gray-800 rounded-lg transition-colors">Discord</a>
                 </div>
             </div>
         </div>
@@ -382,25 +333,10 @@
                     <!-- video player -->
                     <div class="bg-gray-800 rounded-lg overflow-hidden">
                         <div class="relative pt-[56.25%]" id="player-container">
-                            <!--
-                                sandbox attributes explained:
-                                  allow-scripts        – needed for the player JS to run
-                                  allow-same-origin    – needed so the player can load its own resources
-                                  allow-presentation   – needed for fullscreen API inside the iframe
-                                  allow-fullscreen     – lets the iframe go fullscreen
-                                  allow-autoplay       – lets video autoplay
-                                
-                                Deliberately OMITTED (this is what blocks popups):
-                                  allow-popups         – would let the iframe call window.open()
-                                  allow-top-navigation – would let the iframe redirect the parent page
-                                  allow-popups-to-escape-sandbox – would let popups bypass the sandbox
-                            -->
                             <iframe x-bind:src="currentVideoUrl" 
                                     class="absolute top-0 left-0 w-full h-full" 
                                     frameborder="0" 
-                                    scrolling="no"
-                                    sandbox="allow-scripts allow-same-origin allow-presentation allow-fullscreen allow-autoplay"
-                                    referrerpolicy="no-referrer"
+                                    scrolling="no" 
                                     @error="checkProviderStatus()"
                                     @load="handleProviderLoad()"
                                     allowfullscreen>
@@ -427,7 +363,7 @@
                         <div class="p-3 md:p-4">
                             <div class="flex items-center justify-between text-xs md:text-sm text-gray-400">
                                 <div class="hidden lg:block">
-                                    <a href="https://ko-fi.com/ambrosial" target="_blank" class="text-purple-400 hover:text-purple-300 transition-colors allow-external">Support me here</a>
+                                    <a href="https://ko-fi.com/ambrosial" target="_blank" class="text-purple-400 hover:text-purple-300 transition-colors">Support me here</a>
                                 </div>
                                 <div class="text-center mx-auto animated-text" x-show="content?.runtime || content?.episode_run_time">
                                     <span>If you start now, it'll end at </span>
@@ -439,7 +375,7 @@
                                     })()"></span>
                                 </div>
                                 <div class="hidden lg:block">
-                                    <a href="https://ko-fi.com/ambrosial" target="_blank" class="text-purple-400 hover:text-purple-300 transition-colors allow-external">Support me here</a>
+                                    <a href="https://ko-fi.com/ambrosial" target="_blank" class="text-purple-400 hover:text-purple-300 transition-colors">Support me here</a>
                                 </div>
                             </div>
                         </div>
@@ -892,13 +828,10 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <template x-for="video in videos" :key="video.key">
                                     <div class="relative pb-[56.25%] bg-gray-700 rounded-lg overflow-hidden">
-                                        <!-- YouTube iframes don't open popups, but sandbox is still good practice -->
                                         <iframe 
                                             :src="'https://www.youtube.com/embed/' + video.key"
                                             class="absolute inset-0 w-full h-full"
                                             frameborder="0"
-                                            sandbox="allow-scripts allow-same-origin allow-presentation allow-fullscreen allow-autoplay"
-                                            referrerpolicy="no-referrer"
                                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                             allowfullscreen>
                                         </iframe>
@@ -917,7 +850,7 @@
                     <template x-for="item in similarContent" :key="item.id">
                         <div class="relative card-hover">
                             <a :href="'watch.html?id=' + item.id + '&type=' + contentType"
-                               class="block rounded-lg overflow-hidden bg-gray-800 aspect-[2/3] allow-external">
+                               class="block rounded-lg overflow-hidden bg-gray-800 aspect-[2/3]">
                                 <div class="relative h-full">
                                     <img
                                         :src="'https://image.tmdb.org/t/p/w500' + item.poster_path"
@@ -959,32 +892,32 @@
             <p class="text-gray-400 mt-2">Nova aggregates content from various premium streaming platforms</p>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-center justify-items-center opacity-80">
-            <a href="https://netflix.com" target="_blank" class="transform transition-transform hover:scale-105 allow-external">
+            <a href="https://netflix.com" target="_blank" class="transform transition-transform hover:scale-105">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" 
                      alt="Netflix" 
                      class="h-8 w-auto grayscale hover:grayscale-0 hover:scale-110 hover:brightness-125 transition-all duration-300 transform hover:drop-shadow-[0_0_7px_rgba(229,9,20,0.7)]">
             </a>
-            <a href="https://www.primevideo.com" target="_blank" class="transform transition-transform hover:scale-105 allow-external">
+            <a href="https://www.primevideo.com" target="_blank" class="transform transition-transform hover:scale-105">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg" 
                      alt="Prime Video" 
                      class="h-8 w-auto grayscale hover:grayscale-0 hover:scale-110 hover:brightness-125 transition-all duration-300 transform hover:drop-shadow-[0_0_7px_rgba(0,168,225,0.7)]">
             </a>
-            <a href="https://www.disneyplus.com" target="_blank" class="transform transition-transform hover:scale-105 allow-external">
+            <a href="https://www.disneyplus.com" target="_blank" class="transform transition-transform hover:scale-105">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg" 
                      alt="Disney+" 
                      class="h-8 w-auto grayscale hover:grayscale-0 hover:scale-110 hover:brightness-125 transition-all duration-300 transform hover:drop-shadow-[0_0_7px_rgba(113,168,255,0.7)]">
             </a>
-            <a href="https://www.hulu.com" target="_blank" class="transform transition-transform hover:scale-105 allow-external">
+            <a href="https://www.hulu.com" target="_blank" class="transform transition-transform hover:scale-105">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Hulu_logo_%282018%29.svg" 
                      alt="Hulu" 
                      class="h-7 w-auto grayscale hover:grayscale-0 hover:scale-110 hover:brightness-125 transition-all duration-300 transform hover:drop-shadow-[0_0_7px_rgba(28,231,131,0.7)]">
             </a>
-            <a href="https://www.max.com" target="_blank" class="transform transition-transform hover:scale-105 allow-external">
+            <a href="https://www.max.com" target="_blank" class="transform transition-transform hover:scale-105">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/1/17/HBO_Max_Logo.svg" 
                      alt="HBO Max" 
                      class="h-6 w-auto grayscale hover:grayscale-0 hover:scale-110 hover:brightness-125 transition-all duration-300 transform hover:drop-shadow-[0_0_7px_rgba(116,80,254,0.7)]">
             </a>
-            <a href="https://tv.apple.com" target="_blank" class="transform transition-transform hover:scale-105 allow-external">
+            <a href="https://tv.apple.com" target="_blank" class="transform transition-transform hover:scale-105">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/2/28/Apple_TV_Plus_Logo.svg" 
                      alt="Apple TV+" 
                      class="h-6 w-auto grayscale hover:grayscale-0 hover:scale-110 hover:brightness-125 transition-all duration-300 transform hover:drop-shadow-[0_0_7px_rgba(0,244,244,0.7)]">
@@ -1045,7 +978,7 @@
                     <template x-for="item in watchLaterItems" :key="item.id">
                         <div class="relative bg-gray-800 rounded-lg overflow-hidden">
                             <a :href="'watch.html?id=' + item.id + '&type=' + item.type"
-                               class="block allow-external">
+                               class="block">
                                 <img :src="'https://image.tmdb.org/t/p/w500' + item.poster_path" 
                                      :alt="item.title || item.name"
                                      class="w-full h-48 object-cover">
@@ -1528,9 +1461,6 @@
                                     iframe.frameBorder = '0';
                                     iframe.scrolling = 'no';
                                     iframe.allowFullscreen = true;
-                                    // Popup-blocking sandbox — same tokens as the static iframe above
-                                    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-fullscreen allow-autoplay');
-                                    iframe.setAttribute('referrerpolicy', 'no-referrer');
                                     
                                     iframe.addEventListener('error', () => this.checkProviderStatus());
                                     iframe.addEventListener('load', () => this.handleProviderLoad());
@@ -1732,4 +1662,4 @@
         });
     </script>
 </body>
-</html>
+</html> 
