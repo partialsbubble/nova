@@ -182,6 +182,134 @@
         }
     </style>
 </head>
+    <!-- Paste your full HTML ABOVE this line -->
+
+<!-- Modern Ad Toast with Image -->
+<div id="ad-toast">
+  <button id="ad-close">×</button>
+  <a id="ad-link" href="#" target="_blank">
+    <div id="ad-content">
+      <img id="ad-image" src="" alt="ad">
+      <div>
+        <div id="ad-title">Sponsored</div>
+        <div id="ad-text">Loading...</div>
+      </div>
+    </div>
+  </a>
+</div>
+
+<style>
+#ad-toast {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  width: 280px;
+  background: rgba(30, 30, 30, 0.75);
+  color: #fff;
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  backdrop-filter: blur(12px) saturate(140%);
+  z-index: 999999;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.98);
+  transition: all 0.35s ease;
+}
+
+#ad-toast.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+#ad-content {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+#ad-image {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: #222;
+}
+
+#ad-toast a {
+  text-decoration: none;
+  color: inherit;
+}
+
+#ad-title {
+  font-size: 11px;
+  opacity: 0.6;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+}
+
+#ad-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+#ad-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  border: none;
+  background: transparent;
+  color: #aaa;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#ad-close:hover {
+  color: #fff;
+}
+</style>
+
+<script>
+async function loadAd() {
+  try {
+    const res = await fetch('/nova/ads.txt');
+    const text = await res.text();
+
+    const lines = text.trim().split('\n');
+    const random = lines[Math.floor(Math.random() * lines.length)];
+
+    // FORMAT: text|link|image(optional)
+    const [adText, adLink, adImage] = random.split('|');
+
+    document.getElementById('ad-text').innerText = adText;
+    document.getElementById('ad-link').href = adLink;
+
+    const img = document.getElementById('ad-image');
+    if (adImage) {
+      img.src = adImage;
+      img.style.display = 'block';
+    } else {
+      img.style.display = 'none';
+    }
+
+    const toast = document.getElementById('ad-toast');
+    toast.classList.remove('show');
+    setTimeout(() => toast.classList.add('show'), 50);
+  } catch (e) {
+    document.getElementById('ad-text').innerText = 'Ad unavailable';
+  }
+}
+
+// close button
+document.getElementById('ad-close').onclick = () => {
+  document.getElementById('ad-toast').style.display = 'none';
+};
+
+loadAd();
+setInterval(loadAd, 12000);
+</script>
+
+<!-- END Modern Ad Toast -->
 <body class="bg-gray-900 text-white min-h-screen" x-data="app()">
     <div x-show="localStorage.getItem('showParticles') !== 'false'" id="particles-js" class="fixed inset-0 pointer-events-none z-0"></div>
 
